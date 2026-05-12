@@ -1,0 +1,18 @@
+# 基础应用配置
+spring:
+  profiles:
+    active: dev
+  application:
+    name: cyan-dataauth
+  main:
+    web-application-type: servlet
+    allow-bean-definition-overriding: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: always
