@@ -19,6 +19,7 @@ public class RoleDTO implements Serializable {
     private String code;
     private String description;
     private Integer status;
+    private String maxSecurityLevel;
     private String createdBy;
     private String updatedBy;
     private LocalDateTime createdAt;

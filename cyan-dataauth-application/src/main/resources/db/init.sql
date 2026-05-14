@@ -8,6 +8,7 @@ CREATE TABLE IF NOT EXISTS auth_role (
     code VARCHAR(100) NOT NULL COMMENT '角色编码',
     description VARCHAR(500) COMMENT '角色描述',
     status TINYINT DEFAULT 1 COMMENT '状态: 0-禁用, 1-启用',
+    max_security_level VARCHAR(8) DEFAULT 'L1' COMMENT '最高可访问密级: L1/L2/L3/L4',
     created_by VARCHAR(100) COMMENT '创建人',
     updated_by VARCHAR(100) COMMENT '更新人',
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',

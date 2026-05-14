@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+import static com.cyan.arch.common.api.Response.success;
+
 /**
  * 权限校验控制器
  *
@@ -52,5 +54,14 @@ public class AuthCheckController {
                                                           @RequestParam(required = false) String resourceType) {
         List<ResourceTreeNodeBO> bos = authCheckService.listResources(passport, resourceType);
         return Response.success(authCheckAdapterConvert.toResourceTreeNodeList(bos));
+    }
+
+    /**
+     * 获取用户最高可访问密级
+     */
+    @GetMapping("/security-level")
+    public Response<UserSecurityLevelDTO> getUserMaxSecurityLevel(@RequestParam String passport) {
+        String level = authCheckService.getUserMaxSecurityLevel(passport);
+        return success(new UserSecurityLevelDTO(passport, level));
     }
 }

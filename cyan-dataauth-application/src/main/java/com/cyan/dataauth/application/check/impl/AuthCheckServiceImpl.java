@@ -9,6 +9,10 @@ import com.cyan.dataauth.domain.audit.repository.AuthAuditLogRepository;
 import com.cyan.dataauth.domain.permission.AuthPermission;
 import com.cyan.dataauth.domain.permission.PermissionChecker;
 import com.cyan.dataauth.domain.permission.repository.AuthPermissionRepository;
+import com.cyan.dataauth.enums.SecurityLevel;
+import com.cyan.dataauth.infra.persistence.role.dos.AuthRoleDO;
+import com.cyan.dataauth.infra.persistence.role.mappers.AuthRoleMapper;
+import com.cyan.dataauth.infra.persistence.userrole.mappers.AuthUserRoleMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -31,6 +35,8 @@ public class AuthCheckServiceImpl implements AuthCheckService {
     private final AuthPermissionRepository authPermissionRepository;
     private final AuthAuditLogRepository authAuditLogRepository;
     private final AuthCheckAppConvert authCheckAppConvert;
+    private final AuthUserRoleMapper authUserRoleMapper;
+    private final AuthRoleMapper authRoleMapper;
 
     private static final Pattern FROM_PATTERN = Pattern.compile(
             "\\bFROM\\b\\s+([a-zA-Z_][a-zA-Z0-9_]*(?:\\.[a-zA-Z_][a-zA-Z0-9_]*)?(?:\\s+(?:AS\\s+)?[a-zA-Z_][a-zA-Z0-9_]*)?)",
@@ -277,5 +283,23 @@ public class AuthCheckServiceImpl implements AuthCheckService {
             return tableName;
         }
         return tableName;
+    }
+
+    @Override
+    public String getUserMaxSecurityLevel(String passport) {
+        List<Long> roleIds = authUserRoleMapper.selectRoleIdsByPassport(passport);
+        if (roleIds == null || roleIds.isEmpty()) {
+            return SecurityLevel.L1.getCode();
+        }
+        List<AuthRoleDO> roles = authRoleMapper.selectBatchIds(roleIds);
+        if (roles == null || roles.isEmpty()) {
+            return SecurityLevel.L1.getCode();
+        }
+        return roles.stream()
+                .map(r -> SecurityLevel.of(r.getMaxSecurityLevel()))
+                .filter(Objects::nonNull)
+                .max(Comparator.comparingInt(SecurityLevel::ordinal))
+                .map(SecurityLevel::getCode)
+                .orElse(SecurityLevel.L1.getCode());
     }
 }

@@ -16,4 +16,5 @@ public class RoleUpdateCmd implements Serializable {
     private String name;
     private String description;
     private Integer status;
+    private String maxSecurityLevel;
 }

@@ -16,4 +16,5 @@ public class RoleCreateCmd implements Serializable {
     private String name;
     private String code;
     private String description;
+    private String maxSecurityLevel;
 }

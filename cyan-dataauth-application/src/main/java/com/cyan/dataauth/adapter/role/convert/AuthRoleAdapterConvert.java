@@ -30,6 +30,7 @@ public class AuthRoleAdapterConvert {
         dto.setCode(roleBO.getCode());
         dto.setDescription(roleBO.getDescription());
         dto.setStatus(roleBO.getStatus());
+        dto.setMaxSecurityLevel(roleBO.getMaxSecurityLevel());
         dto.setCreatedBy(roleBO.getCreatedBy());
         dto.setUpdatedBy(roleBO.getUpdatedBy());
         dto.setCreatedAt(roleBO.getCreatedAt());

@@ -10,11 +10,15 @@ import com.cyan.dataauth.cmd.FilterSqlCmd;
 import com.cyan.dataauth.dto.AuthCheckResult;
 import com.cyan.dataauth.dto.FilterSqlResult;
 import com.cyan.dataauth.dto.ResourceTreeNode;
+import com.cyan.dataauth.dto.UserSecurityLevelDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+
+import static com.cyan.arch.common.api.Response.success;
 
 /**
  * 元数据权限校验 RPC 服务（供内部服务调用）
@@ -46,5 +50,11 @@ public class AuthCheckRpc implements AuthCheckClient {
     public Response<List<ResourceTreeNode>> listResources(String passport, String resourceType) {
         List<ResourceTreeNodeBO> bos = authCheckService.listResources(passport, resourceType);
         return Response.success(authCheckAdapterConvert.toResourceTreeNodeList(bos));
+    }
+
+    @Override
+    public Response<UserSecurityLevelDTO> getUserMaxSecurityLevel(@RequestParam("passport") String passport) {
+        String level = authCheckService.getUserMaxSecurityLevel(passport);
+        return success(new UserSecurityLevelDTO(passport, level));
     }
 }

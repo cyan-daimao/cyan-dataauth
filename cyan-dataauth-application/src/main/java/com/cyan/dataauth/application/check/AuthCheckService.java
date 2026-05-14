@@ -42,4 +42,9 @@ public interface AuthCheckService {
      * 指标SQL过滤
      */
     MetricFilterSqlResultBO metricFilterSql(MetricFilterSqlCmd cmd);
+
+    /**
+     * 获取用户最高可访问密级
+     */
+    String getUserMaxSecurityLevel(String passport);
 }

@@ -6,6 +6,7 @@ import com.cyan.dataauth.cmd.FilterSqlCmd;
 import com.cyan.dataauth.dto.AuthCheckResult;
 import com.cyan.dataauth.dto.FilterSqlResult;
 import com.cyan.dataauth.dto.ResourceTreeNode;
+import com.cyan.dataauth.dto.UserSecurityLevelDTO;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -41,4 +42,10 @@ public interface AuthCheckClient {
     @GetMapping("/resources")
     Response<List<ResourceTreeNode>> listResources(@RequestParam("passport") String passport,
                                                     @RequestParam(value = "resourceType", required = false) String resourceType);
+
+    /**
+     * 获取用户最高可访问密级
+     */
+    @GetMapping("/security-level")
+    Response<UserSecurityLevelDTO> getUserMaxSecurityLevel(@RequestParam("passport") String passport);
 }

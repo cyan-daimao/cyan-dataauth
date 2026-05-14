@@ -52,6 +52,11 @@ public class AuthRoleDO {
     private Integer status;
 
     /**
+     * 最高可访问密级: L1/L2/L3/L4
+     */
+    private String maxSecurityLevel;
+
+    /**
      * 创建人
      */
     @TableField("created_by")

@@ -45,6 +45,11 @@ public class RoleBO {
     private Integer status;
 
     /**
+     * 最高可访问密级: L1/L2/L3/L4
+     */
+    private String maxSecurityLevel;
+
+    /**
      * 创建人
      */
     private String createdBy;

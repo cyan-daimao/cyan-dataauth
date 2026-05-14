@@ -49,6 +49,11 @@ public class AuthRole {
     private Integer status;
 
     /**
+     * 最高可访问密级: L1/L2/L3/L4
+     */
+    private String maxSecurityLevel;
+
+    /**
      * 创建人
      */
     private String createdBy;
@@ -84,6 +89,9 @@ public class AuthRole {
         if (status == null) {
             status = 1;
         }
+        if (maxSecurityLevel == null || maxSecurityLevel.isBlank()) {
+            maxSecurityLevel = "L1";
+        }
         createdAt = LocalDateTime.now();
         updatedAt = createdAt;
         return roleRepository.save(this);
@@ -100,6 +108,9 @@ public class AuthRole {
         if (code != null && !code.equals(exist.code)) {
             AuthRole codeExist = roleRepository.getByCode(code);
             Assert.isNull(codeExist, new SilentException("角色编码已存在: " + code));
+        }
+        if (maxSecurityLevel == null || maxSecurityLevel.isBlank()) {
+            maxSecurityLevel = "L1";
         }
         updatedAt = LocalDateTime.now();
         return roleRepository.update(this);

@@ -30,6 +30,7 @@ public class AuthRoleAppConvert {
                 .setCode(role.getCode())
                 .setDescription(role.getDescription())
                 .setStatus(role.getStatus())
+                .setMaxSecurityLevel(role.getMaxSecurityLevel())
                 .setCreatedBy(role.getCreatedBy())
                 .setUpdatedBy(role.getUpdatedBy())
                 .setCreatedAt(role.getCreatedAt())
@@ -55,7 +56,8 @@ public class AuthRoleAppConvert {
         return new AuthRole()
                 .setName(cmd.getName())
                 .setCode(cmd.getCode())
-                .setDescription(cmd.getDescription());
+                .setDescription(cmd.getDescription())
+                .setMaxSecurityLevel(cmd.getMaxSecurityLevel());
     }
 
     /**
@@ -69,6 +71,7 @@ public class AuthRoleAppConvert {
                 .setId(id)
                 .setName(cmd.getName())
                 .setDescription(cmd.getDescription())
-                .setStatus(cmd.getStatus());
+                .setStatus(cmd.getStatus())
+                .setMaxSecurityLevel(cmd.getMaxSecurityLevel());
     }
 }
