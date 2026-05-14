@@ -163,11 +163,10 @@ public class AuthCheckServiceImpl implements AuthCheckService {
     @Override
     public List<MetricResourceBO> listMetricResources(String passport, String resourceType, String subjectCode, String action) {
         List<AuthPermission> permissions = authPermissionRepository.selectByPassport(passport);
-        String checkAction = action != null && !action.isEmpty() ? action : "USE";
 
         return permissions.stream()
                 .filter(p -> resourceType.equals(p.getResourceType()))
-                .filter(p -> checkAction.equals(p.getAction()))
+                .filter(p -> action == null || action.isEmpty() || action.equals(p.getAction()))
                 .map(p -> authCheckAppConvert.toMetricResourceBO(
                         p.getId() != null ? p.getId().toString() : null,
                         p.getResourceId(),
