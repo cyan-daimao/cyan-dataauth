@@ -22,4 +22,13 @@ public interface AuthPermissionMapper extends BaseMapper<AuthPermissionDO> {
             "INNER JOIN auth_user_role ur ON rp.role_id = ur.role_id " +
             "WHERE ur.passport = #{passport}")
     List<AuthPermissionDO> selectByPassport(@Param("passport") String passport);
+
+    @Select("SELECT p.* FROM auth_permission p " +
+            "INNER JOIN auth_role_permission rp ON p.id = rp.permission_id " +
+            "WHERE rp.role_id = #{roleId}")
+    List<AuthPermissionDO> selectByRoleId(@Param("roleId") Long roleId);
+
+    @Select("SELECT p.* FROM auth_permission p " +
+            "WHERE p.resource_type = #{resourceType}")
+    List<AuthPermissionDO> selectByResourceType(@Param("resourceType") String resourceType);
 }

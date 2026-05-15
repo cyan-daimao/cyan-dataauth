@@ -3,11 +3,14 @@ package com.cyan.dataauth.adapter.role.http;
 import com.cyan.dataauth.adapter.role.convert.AuthRoleAdapterConvert;
 import com.cyan.dataauth.application.role.AuthRoleService;
 import com.cyan.dataauth.application.role.bo.RoleBO;
+import com.cyan.dataauth.application.rolemember.AuthRoleMemberService;
+import com.cyan.dataauth.cmd.AddRoleMembersCmd;
 import com.cyan.dataauth.cmd.AssignPermissionsCmd;
 import com.cyan.dataauth.cmd.RoleCreateCmd;
 import com.cyan.dataauth.cmd.RoleUpdateCmd;
 import com.cyan.arch.common.api.Response;
 import com.cyan.dataauth.dto.RoleDTO;
+import com.cyan.dataauth.dto.RoleMemberDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,6 +28,7 @@ import java.util.List;
 public class AuthRoleController {
 
     private final AuthRoleService authRoleService;
+    private final AuthRoleMemberService authRoleMemberService;
     private final AuthRoleAdapterConvert authRoleAdapterConvert;
 
     /**
@@ -72,6 +76,36 @@ public class AuthRoleController {
                 ? cmd.getPermissionIds().stream().map(String::valueOf).toList()
                 : List.of();
         authRoleService.assignPermissions(id, permissionIds);
+        return Response.success(null);
+    }
+
+    /**
+     * 查询角色成员列表
+     */
+    @GetMapping("/{roleId}/members")
+    // API: ready
+    public Response<List<RoleMemberDTO>> listMembers(@PathVariable String roleId) {
+        List<RoleMemberDTO> members = authRoleMemberService.listMembers(roleId);
+        return Response.success(members);
+    }
+
+    /**
+     * 批量添加角色成员
+     */
+    @PostMapping("/{roleId}/members")
+    // API: ready
+    public Response<Void> addMembers(@PathVariable String roleId, @RequestBody AddRoleMembersCmd cmd) {
+        authRoleMemberService.addMembers(roleId, cmd.getPassports());
+        return Response.success(null);
+    }
+
+    /**
+     * 移除角色成员
+     */
+    @DeleteMapping("/{roleId}/members/{passport}")
+    // API: ready
+    public Response<Void> removeMember(@PathVariable String roleId, @PathVariable String passport) {
+        authRoleMemberService.removeMember(roleId, passport);
         return Response.success(null);
     }
 }

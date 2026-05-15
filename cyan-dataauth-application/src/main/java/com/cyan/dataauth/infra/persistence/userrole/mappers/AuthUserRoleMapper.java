@@ -19,4 +19,7 @@ public interface AuthUserRoleMapper extends BaseMapper<AuthUserRoleDO> {
 
     @Select("SELECT role_id FROM auth_user_role WHERE passport = #{passport}")
     List<Long> selectRoleIdsByPassport(@Param("passport") String passport);
+
+    @Select("SELECT passport FROM auth_user_role WHERE role_id = #{roleId}")
+    List<String> selectPassportsByRoleId(@Param("roleId") Long roleId);
 }
