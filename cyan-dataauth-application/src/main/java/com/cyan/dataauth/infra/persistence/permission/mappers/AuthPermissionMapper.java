@@ -31,4 +31,7 @@ public interface AuthPermissionMapper extends BaseMapper<AuthPermissionDO> {
     @Select("SELECT p.* FROM auth_permission p " +
             "WHERE p.resource_type = #{resourceType}")
     List<AuthPermissionDO> selectByResourceType(@Param("resourceType") String resourceType);
+
+    @Select("SELECT * FROM auth_permission WHERE resource_type = #{resourceType} AND resource_id = #{resourceId} AND action = #{action}")
+    AuthPermissionDO selectByResource(@Param("resourceType") String resourceType, @Param("resourceId") String resourceId, @Param("action") String action);
 }

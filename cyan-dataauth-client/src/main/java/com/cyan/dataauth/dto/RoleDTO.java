@@ -25,4 +25,10 @@ public class RoleDTO implements Serializable {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private LocalDateTime deletedAt;
+
+    /**
+     * 功能权限key列表 (Round2: ready)
+     * 格式: resourceType:resourceId:action
+     */
+    private java.util.List<String> functionPermissions;
 }

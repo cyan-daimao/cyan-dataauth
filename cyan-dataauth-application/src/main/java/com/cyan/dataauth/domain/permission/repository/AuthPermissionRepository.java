@@ -26,4 +26,14 @@ public interface AuthPermissionRepository {
      * 根据用户护照查询权限
      */
     List<AuthPermission> selectByPassport(String passport);
+
+    /**
+     * 根据资源查询权限
+     */
+    AuthPermission getByResource(String resourceType, String resourceId, String action);
+
+    /**
+     * 保存权限
+     */
+    AuthPermission save(AuthPermission permission);
 }

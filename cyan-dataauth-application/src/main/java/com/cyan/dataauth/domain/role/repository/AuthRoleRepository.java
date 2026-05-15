@@ -51,4 +51,29 @@ public interface AuthRoleRepository {
      * 分配权限
      */
     void assignPermissions(String roleId, List<String> permissionIds);
+
+    /**
+     * 追加单个权限（不删除已有）
+     */
+    void addPermission(String roleId, String permissionId);
+
+    /**
+     * 根据资源查找权限ID
+     */
+    String findPermissionIdByResource(String resourceType, String resourceId, String action);
+
+    /**
+     * 按角色ID和资源类型查询关联的权限项ID (Round2: ready)
+     */
+    List<String> selectPermissionIdsByRoleIdAndResourceType(Long roleId, String resourceType);
+
+    /**
+     * 删除角色下指定资源类型的权限关联 (Round2: ready)
+     */
+    void deleteRolePermissionsByResourceType(String roleId, String resourceType);
+
+    /**
+     * 查询角色下指定资源类型的功能权限key列表 (Round2: ready)
+     */
+    List<String> selectFunctionPermissionKeysByRoleId(String roleId, String resourceType);
 }

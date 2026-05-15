@@ -118,7 +118,7 @@ public class AuthUserPermissionServiceImpl implements AuthUserPermissionService 
                     .filter(Objects::nonNull)
                     .map(r -> new RoleDTO(r.getId(), r.getName(), r.getCode(), r.getDescription(),
                             r.getStatus(), r.getMaxSecurityLevel(), r.getCreatedBy(), r.getUpdatedBy(),
-                            r.getCreatedAt(), r.getUpdatedAt(), r.getDeletedAt()))
+                            r.getCreatedAt(), r.getUpdatedAt(), r.getDeletedAt(), null))
                     .collect(Collectors.toList());
             dto.setRoles(roleDTOs);
 

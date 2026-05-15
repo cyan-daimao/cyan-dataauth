@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * 角色业务对象
@@ -73,4 +74,10 @@ public class RoleBO {
      * 删除时间（逻辑删除）
      */
     private LocalDateTime deletedAt;
+
+    /**
+     * 功能权限key列表 (Round2: ready)
+     * 格式: resourceType:resourceId:action
+     */
+    private List<String> functionPermissions;
 }

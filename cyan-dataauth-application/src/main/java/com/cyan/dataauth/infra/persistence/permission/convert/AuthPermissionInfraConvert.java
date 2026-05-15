@@ -44,4 +44,24 @@ public class AuthPermissionInfraConvert {
         return Optional.ofNullable(permissionDOs).orElse(List.of())
                 .stream().map(this::toAuthPermission).collect(Collectors.toList());
     }
+
+    /**
+     * Domain转DO
+     */
+    public AuthPermissionDO toAuthPermissionDO(AuthPermission permission) {
+        if (permission == null) {
+            return null;
+        }
+        return new AuthPermissionDO()
+                .setId(permission.getId() != null ? Long.valueOf(permission.getId()) : null)
+                .setResourceType(permission.getResourceType())
+                .setResourceId(permission.getResourceId())
+                .setAction(permission.getAction())
+                .setDescription(permission.getDescription())
+                .setCreatedBy(permission.getCreatedBy())
+                .setUpdatedBy(permission.getUpdatedBy())
+                .setCreatedAt(permission.getCreatedAt())
+                .setUpdatedAt(permission.getUpdatedAt())
+                .setDeletedAt(permission.getDeletedAt());
+    }
 }

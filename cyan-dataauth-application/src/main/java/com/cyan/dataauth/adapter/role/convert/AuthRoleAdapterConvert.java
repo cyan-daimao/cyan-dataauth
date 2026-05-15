@@ -36,6 +36,7 @@ public class AuthRoleAdapterConvert {
         dto.setCreatedAt(roleBO.getCreatedAt());
         dto.setUpdatedAt(roleBO.getUpdatedAt());
         dto.setDeletedAt(roleBO.getDeletedAt());
+        dto.setFunctionPermissions(roleBO.getFunctionPermissions());
         return dto;
     }
 

@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -17,4 +18,5 @@ public class RoleUpdateCmd implements Serializable {
     private String description;
     private Integer status;
     private String maxSecurityLevel;
+    private List<String> functionPermissionKeys;
 }

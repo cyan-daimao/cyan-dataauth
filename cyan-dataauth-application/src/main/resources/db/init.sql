@@ -109,3 +109,44 @@ CREATE TABLE IF NOT EXISTS auth_audit_log (
     INDEX idx_action (action),
     INDEX idx_timestamp (timestamp)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='审计日志表';
+
+-- 功能权限树节点预录入 (Round1: ready)
+INSERT IGNORE INTO auth_permission (resource_type, resource_id, action, description) VALUES
+('MENU', 'meta', 'VIEW', '元数据平台'),
+('MENU', 'meta:business-ds', 'VIEW', '业务数据库'),
+('MENU', 'meta:business-ds:datasource', 'VIEW', '数据源管理'),
+('MENU', 'meta:business-ds:database', 'VIEW', '数据库管理'),
+('MENU', 'meta:business-ds:table-schema', 'VIEW', '表结构管理'),
+('MENU', 'meta:business-ds:sql', 'EXECUTE', 'SQL执行'),
+('MENU', 'meta:metadata', 'VIEW', '元数据数据源'),
+('MENU', 'meta:metadata:datasource', 'VIEW', '目录管理'),
+('MENU', 'meta:metadata:subject', 'VIEW', 'Schema管理'),
+('MENU', 'meta:metadata:metadata_table', 'VIEW', '表管理'),
+('MENU', 'metrics', 'VIEW', '指标平台'),
+('MENU', 'metrics:dashboard', 'VIEW', '指标概览'),
+('MENU', 'metrics:definition', 'VIEW', '指标定义'),
+('MENU', 'metrics:dictionary', 'VIEW', '指标字典'),
+('MENU', 'metrics:analysis', 'USE', '指标分析'),
+('MENU', 'metrics:config', 'VIEW', '指标配置'),
+('MENU', 'metrics:dimension', 'VIEW', '维度管理'),
+('MENU', 'sql-editor', 'USE', 'SQL查询'),
+('MENU', 'data-work', 'USE', '数据加工'),
+('MENU', 'bi', 'VIEW', '智能分析'),
+('MENU', 'bi:chart', 'VIEW', '图表分析'),
+('MENU', 'bi:dashboard', 'VIEW', '看板管理'),
+('MENU', 'bi:dataset', 'VIEW', '数据集管理'),
+('MENU', 'auth', 'VIEW', '权限管理'),
+('MENU', 'auth:role', 'VIEW', '角色管理'),
+('MENU', 'auth:user', 'VIEW', '用户权限'),
+('MENU', 'auth:metric', 'VIEW', '指标平台权限'),
+('MENU', 'auth:approval', 'VIEW', '审批管理'),
+('MENU', 'auth:audit', 'VIEW', '审计日志');
+
+-- Round3: 补充操作权限节点（用于 PermissionButton 控制）
+INSERT IGNORE INTO auth_permission (resource_type, resource_id, action, description) VALUES
+('MENU', 'auth:role', 'CREATE', '角色管理-新增'),
+('MENU', 'auth:role', 'UPDATE', '角色管理-编辑'),
+('MENU', 'auth:role', 'DELETE', '角色管理-删除'),
+('MENU', 'auth:user', 'UPDATE', '用户权限-分配角色'),
+('MENU', 'auth:approval', 'UPDATE', '审批管理-审批操作'),
+('MENU', 'auth:metric', 'UPDATE', '指标平台权限-配置');

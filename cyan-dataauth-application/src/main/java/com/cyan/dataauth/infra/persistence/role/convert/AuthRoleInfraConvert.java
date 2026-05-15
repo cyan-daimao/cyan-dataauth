@@ -35,7 +35,8 @@ public class AuthRoleInfraConvert {
                 .setUpdatedBy(roleDO.getUpdatedBy())
                 .setCreatedAt(roleDO.getCreatedAt())
                 .setUpdatedAt(roleDO.getUpdatedAt())
-                .setDeletedAt(roleDO.getDeletedAt());
+                .setDeletedAt(roleDO.getDeletedAt())
+                .setFunctionPermissions(null);
     }
 
     /**

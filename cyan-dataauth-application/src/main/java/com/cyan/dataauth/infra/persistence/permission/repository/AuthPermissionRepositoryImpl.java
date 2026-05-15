@@ -40,4 +40,17 @@ public class AuthPermissionRepositoryImpl implements AuthPermissionRepository {
         List<AuthPermissionDO> permissionDOs = authPermissionMapper.selectByPassport(passport);
         return authPermissionInfraConvert.toAuthPermissionList(permissionDOs);
     }
+
+    @Override
+    public AuthPermission getByResource(String resourceType, String resourceId, String action) {
+        AuthPermissionDO permissionDO = authPermissionMapper.selectByResource(resourceType, resourceId, action);
+        return authPermissionInfraConvert.toAuthPermission(permissionDO);
+    }
+
+    @Override
+    public AuthPermission save(AuthPermission permission) {
+        AuthPermissionDO permissionDO = authPermissionInfraConvert.toAuthPermissionDO(permission);
+        authPermissionMapper.insert(permissionDO);
+        return getById(String.valueOf(permissionDO.getId()));
+    }
 }

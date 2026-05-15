@@ -79,6 +79,12 @@ public class AuthRole {
     private LocalDateTime deletedAt;
 
     /**
+     * 功能权限key列表 (Round2: ready)
+     * 格式: resourceType:resourceId:action
+     */
+    private List<String> functionPermissions;
+
+    /**
      * 创建角色
      */
     public AuthRole create(AuthRoleRepository roleRepository) {

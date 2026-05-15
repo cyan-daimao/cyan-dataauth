@@ -35,7 +35,8 @@ public class AuthRoleAppConvert {
                 .setUpdatedBy(role.getUpdatedBy())
                 .setCreatedAt(role.getCreatedAt())
                 .setUpdatedAt(role.getUpdatedAt())
-                .setDeletedAt(role.getDeletedAt());
+                .setDeletedAt(role.getDeletedAt())
+                .setFunctionPermissions(role.getFunctionPermissions());
     }
 
     /**
