@@ -87,6 +87,7 @@ public class AuthCheckServiceImpl implements AuthCheckService {
 
     /**
      * 查询元数据服务判断表是否是 L1 公开
+     * 查不到表时默认允许（CDC 原始表等不在元数据中的表默认为 L1）
      */
     private boolean isPublicTable(String tableName) {
         log.info("[isPublicTable] 开始查询表密级, tableName={}", tableName);
@@ -97,18 +98,23 @@ public class AuthCheckServiceImpl implements AuthCheckService {
             java.util.Map response = restTemplate.getForObject(url, java.util.Map.class);
             log.info("[isPublicTable] 响应: {}", response);
             if (response == null) {
-                log.warn("[isPublicTable] 响应为空, tableName={}", tableName);
-                return false;
+                log.warn("[isPublicTable] 响应为空, tableName={}, 默认允许", tableName);
+                return true;
             }
             Object code = response.get("code");
             Object data = response.get("data");
             log.info("[isPublicTable] code={}, data={}, tableName={}", code, data, tableName);
+            // dataman 查不到表(data=null)时，默认允许（CDC 原始表等不在元数据管理中的表）
+            if (data == null) {
+                log.info("[isPublicTable] dataman 查不到表, 默认允许, tableName={}", tableName);
+                return true;
+            }
             boolean isL1 = "L1".equals(data);
             log.info("[isPublicTable] 结果: isL1={}, tableName={}", isL1, tableName);
             return isL1;
         } catch (Exception e) {
-            log.warn("[isPublicTable] 查询表密级失败: tableName={}", tableName, e);
-            return false;
+            log.warn("[isPublicTable] 查询表密级失败: tableName={}, 默认允许", tableName, e);
+            return true;
         }
     }
 
