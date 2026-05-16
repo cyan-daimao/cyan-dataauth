@@ -14,7 +14,9 @@ import com.cyan.dataauth.infra.persistence.role.dos.AuthRoleDO;
 import com.cyan.dataauth.infra.persistence.role.mappers.AuthRoleMapper;
 import com.cyan.dataauth.infra.persistence.userrole.mappers.AuthUserRoleMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.*;
 import java.util.regex.Matcher;
@@ -27,6 +29,7 @@ import java.util.stream.Collectors;
  * @author cy.Y
  * @since 1.0.0
  */
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AuthCheckServiceImpl implements AuthCheckService {
@@ -37,6 +40,7 @@ public class AuthCheckServiceImpl implements AuthCheckService {
     private final AuthCheckAppConvert authCheckAppConvert;
     private final AuthUserRoleMapper authUserRoleMapper;
     private final AuthRoleMapper authRoleMapper;
+    private final RestTemplate restTemplate;
 
     private static final Pattern FROM_PATTERN = Pattern.compile(
             "\\bFROM\\b\\s+([a-zA-Z_][a-zA-Z0-9_]*(?:\\.[a-zA-Z_][a-zA-Z0-9_]*)?(?:\\s+(?:AS\\s+)?[a-zA-Z_][a-zA-Z0-9_]*)?)",
@@ -65,6 +69,10 @@ public class AuthCheckServiceImpl implements AuthCheckService {
         for (String tableName : tableNames) {
             String resourceId = normalizeTableName(tableName);
             if (!permissionChecker.hasPermission(passport, "TABLE", resourceId, "SELECT")) {
+                // 层级权限推导失败后，检查表是否是 L1 公开
+                if (isPublicTable(tableName)) {
+                    continue;
+                }
                 recordAudit(passport, "SQL_EXECUTE", "TABLE", resourceId,
                         sql, null, null, null, "HIGH");
                 return authCheckAppConvert.toFilterSqlResultBO(false, "无权限访问表 " + resourceId, sql, null);
@@ -75,6 +83,26 @@ public class AuthCheckServiceImpl implements AuthCheckService {
                 sql, sql, null, null, "LOW");
 
         return authCheckAppConvert.toFilterSqlResultBO(true, null, sql, sql);
+    }
+
+    /**
+     * 查询元数据服务判断表是否是 L1 公开
+     */
+    private boolean isPublicTable(String tableName) {
+        try {
+            String url = "http://cyan-dataman/rpc/v1/agent/meta/tables/" + tableName + "/security-level";
+            @SuppressWarnings("rawtypes")
+            java.util.Map response = restTemplate.getForObject(url, java.util.Map.class);
+            if (response == null) {
+                return false;
+            }
+            Object data = response.get("data");
+            // L1 默认公开
+            return "L1".equals(data);
+        } catch (Exception e) {
+            log.warn("查询表密级失败: {}", tableName, e);
+            return false;
+        }
     }
 
     @Override
