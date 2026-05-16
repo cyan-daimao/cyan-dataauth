@@ -89,18 +89,25 @@ public class AuthCheckServiceImpl implements AuthCheckService {
      * 查询元数据服务判断表是否是 L1 公开
      */
     private boolean isPublicTable(String tableName) {
+        log.info("[isPublicTable] 开始查询表密级, tableName={}", tableName);
         try {
             String url = "http://cyan-dataman/rpc/v1/agent/meta/tables/" + tableName + "/security-level";
+            log.info("[isPublicTable] 调用URL: {}", url);
             @SuppressWarnings("rawtypes")
             java.util.Map response = restTemplate.getForObject(url, java.util.Map.class);
+            log.info("[isPublicTable] 响应: {}", response);
             if (response == null) {
+                log.warn("[isPublicTable] 响应为空, tableName={}", tableName);
                 return false;
             }
+            Object code = response.get("code");
             Object data = response.get("data");
-            // L1 默认公开
-            return "L1".equals(data);
+            log.info("[isPublicTable] code={}, data={}, tableName={}", code, data, tableName);
+            boolean isL1 = "L1".equals(data);
+            log.info("[isPublicTable] 结果: isL1={}, tableName={}", isL1, tableName);
+            return isL1;
         } catch (Exception e) {
-            log.warn("查询表密级失败: {}", tableName, e);
+            log.warn("[isPublicTable] 查询表密级失败: tableName={}", tableName, e);
             return false;
         }
     }
