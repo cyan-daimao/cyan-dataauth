@@ -294,13 +294,20 @@ public class AuthMyPermissionController {
         return idx > 0 ? resourceId.substring(0, idx) : "默认主题";
     }
 
+    // 超管账号列表
+    private static final java.util.Set<String> SUPER_ADMINS = java.util.Set.of("admin", "cyan1");
+
     /**
      * 功能权限树
      */
     @GetMapping("/function-permissions/tree")
     // API: ready
-    public Response<List<FunctionPermissionNodeDTO>> getFunctionPermissionTree() {
+    public Response<List<FunctionPermissionNodeDTO>> getFunctionPermissionTree(@RequestParam(required = false) String passport) {
         List<FunctionPermissionNodeDTO> tree = buildHardcodedTree();
+        if (passport != null && SUPER_ADMINS.contains(passport)) {
+            // 超管添加通配符节点，前端 PermissionButton 识别 * 为所有权限
+            tree.add(0, new FunctionPermissionNodeDTO("*", "超级管理员", "MENU", null));
+        }
         return Response.success(tree);
     }
 
