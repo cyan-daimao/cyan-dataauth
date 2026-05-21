@@ -28,6 +28,16 @@ public interface AuthRoleRepository {
     List<AuthRole> list();
 
     /**
+     * 根据ID列表查询
+     */
+    List<AuthRole> listByIds(List<Long> ids);
+
+    /**
+     * 根据编码列表查询
+     */
+    List<AuthRole> listByCodes(List<String> codes);
+
+    /**
      * 保存
      */
     AuthRole save(AuthRole role);

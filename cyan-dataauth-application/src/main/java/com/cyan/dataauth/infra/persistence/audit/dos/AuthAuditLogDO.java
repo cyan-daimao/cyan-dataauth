@@ -28,7 +28,7 @@ public class AuthAuditLogDO {
     /**
      * 主键id
      */
-    @TableId(type = IdType.AUTO)
+    @TableId(value = "id", type = IdType.ASSIGN_ID)
     private Long id;
 
     /**

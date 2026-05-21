@@ -1,5 +1,6 @@
 package com.cyan.dataauth.domain.permission;
 
+import com.cyan.dataauth.domain.permission.repository.AuthPermissionRepository;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -68,4 +69,31 @@ public class AuthPermission {
      * 删除时间（逻辑删除）
      */
     private LocalDateTime deletedAt;
+
+    /**
+     * 保存权限
+     */
+    public AuthPermission save(AuthPermissionRepository repository) {
+        if (createdAt == null) {
+            createdAt = LocalDateTime.now();
+        }
+        return repository.save(this);
+    }
+
+    /**
+     * 更新权限
+     */
+    public AuthPermission update(AuthPermissionRepository repository) {
+        if (updatedAt == null) {
+            updatedAt = LocalDateTime.now();
+        }
+        return repository.update(this);
+    }
+
+    /**
+     * 删除权限
+     */
+    public void delete(AuthPermissionRepository repository) {
+        repository.delete(this.id);
+    }
 }

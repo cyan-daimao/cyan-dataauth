@@ -12,6 +12,8 @@ import com.cyan.dataauth.infra.persistence.approval.mappers.AuthApprovalMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 /**
  * 审批仓储实现
  *
@@ -51,6 +53,16 @@ public class AuthApprovalRepositoryImpl implements AuthApprovalRepository {
         return new com.cyan.arch.common.api.Page<>(
                 authApprovalInfraConvert.toAuthApprovalList(resultPage.getRecords()),
                 resultPage.getCurrent(), resultPage.getSize(), resultPage.getTotal());
+    }
+
+    @Override
+    public List<AuthApproval> listPendingByApplicant(String passport) {
+        LambdaQueryWrapper<AuthApprovalDO> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(AuthApprovalDO::getApplicantPassport, passport);
+        wrapper.eq(AuthApprovalDO::getStatus, "PENDING");
+        wrapper.orderByDesc(AuthApprovalDO::getSubmittedAt);
+        List<AuthApprovalDO> approvals = authApprovalMapper.selectList(wrapper);
+        return authApprovalInfraConvert.toAuthApprovalList(approvals);
     }
 
     @Override

@@ -1,24 +1,42 @@
 package com.cyan.dataauth.application.check.impl;
 
+import com.cyan.arch.common.api.Response;
 import com.cyan.dataauth.application.check.AuthCheckService;
-import com.cyan.dataauth.application.check.bo.*;
+import com.cyan.dataauth.application.check.bo.AuthCheckResultBO;
+import com.cyan.dataauth.application.check.bo.FilterSqlResultBO;
+import com.cyan.dataauth.application.check.bo.MetricCheckItemResultBO;
+import com.cyan.dataauth.application.check.bo.MetricCheckResultBO;
+import com.cyan.dataauth.application.check.bo.MetricFilterSqlResultBO;
+import com.cyan.dataauth.application.check.bo.MetricResourceBO;
+import com.cyan.dataauth.application.check.bo.ResourceTreeNodeBO;
 import com.cyan.dataauth.application.check.convert.AuthCheckAppConvert;
-import com.cyan.dataauth.cmd.*;
+import com.cyan.dataauth.cmd.AuthCheckCmd;
+import com.cyan.dataauth.cmd.FilterSqlCmd;
+import com.cyan.dataauth.cmd.MetricCheckCmd;
+import com.cyan.dataauth.cmd.MetricFilterSqlCmd;
 import com.cyan.dataauth.domain.audit.AuthAuditLog;
 import com.cyan.dataauth.domain.audit.repository.AuthAuditLogRepository;
 import com.cyan.dataauth.domain.permission.AuthPermission;
 import com.cyan.dataauth.domain.permission.PermissionChecker;
 import com.cyan.dataauth.domain.permission.repository.AuthPermissionRepository;
+import com.cyan.dataauth.domain.role.AuthRole;
+import com.cyan.dataauth.domain.role.repository.AuthRoleRepository;
+import com.cyan.dataauth.domain.userrole.repository.AuthUserRoleRepository;
 import com.cyan.dataauth.enums.SecurityLevel;
-import com.cyan.dataauth.infra.persistence.role.dos.AuthRoleDO;
-import com.cyan.dataauth.infra.persistence.role.mappers.AuthRoleMapper;
-import com.cyan.dataauth.infra.persistence.userrole.mappers.AuthUserRoleMapper;
+import com.cyan.dataauth.infra.remote.dataman.client.DatamanMetadataClient;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -38,9 +56,9 @@ public class AuthCheckServiceImpl implements AuthCheckService {
     private final AuthPermissionRepository authPermissionRepository;
     private final AuthAuditLogRepository authAuditLogRepository;
     private final AuthCheckAppConvert authCheckAppConvert;
-    private final AuthUserRoleMapper authUserRoleMapper;
-    private final AuthRoleMapper authRoleMapper;
-    private final RestTemplate restTemplate;
+    private final AuthUserRoleRepository authUserRoleRepository;
+    private final AuthRoleRepository authRoleRepository;
+    private final DatamanMetadataClient datamanMetadataClient;
 
     private static final Pattern FROM_PATTERN = Pattern.compile(
             "\\bFROM\\b\\s+([a-zA-Z_][a-zA-Z0-9_]*(?:\\.[a-zA-Z_][a-zA-Z0-9_]*)?(?:\\s+(?:AS\\s+)?[a-zA-Z_][a-zA-Z0-9_]*)?)",
@@ -69,7 +87,6 @@ public class AuthCheckServiceImpl implements AuthCheckService {
         for (String tableName : tableNames) {
             String resourceId = normalizeTableName(tableName);
             if (!permissionChecker.hasPermission(passport, "TABLE", resourceId, "SELECT")) {
-                // 层级权限推导失败后，检查表是否是 L1 公开
                 if (isPublicTable(tableName)) {
                     continue;
                 }
@@ -85,26 +102,17 @@ public class AuthCheckServiceImpl implements AuthCheckService {
         return authCheckAppConvert.toFilterSqlResultBO(true, null, sql, sql);
     }
 
-    /**
-     * 查询元数据服务判断表是否是 L1 公开
-     * 查不到表时默认允许（CDC 原始表等不在元数据中的表默认为 L1）
-     */
     private boolean isPublicTable(String tableName) {
         log.info("[isPublicTable] 开始查询表密级, tableName={}", tableName);
         try {
-            String url = "http://cyan-dataman/rpc/v1/agent/meta/tables/" + tableName + "/security-level";
-            log.info("[isPublicTable] 调用URL: {}", url);
-            @SuppressWarnings("rawtypes")
-            java.util.Map response = restTemplate.getForObject(url, java.util.Map.class);
+            Response<String> response = datamanMetadataClient.getTableSecurityLevel(tableName);
             log.info("[isPublicTable] 响应: {}", response);
             if (response == null) {
                 log.warn("[isPublicTable] 响应为空, tableName={}, 默认允许", tableName);
                 return true;
             }
-            Object code = response.get("code");
-            Object data = response.get("data");
-            log.info("[isPublicTable] code={}, data={}, tableName={}", code, data, tableName);
-            // dataman 查不到表(data=null)时，默认允许（CDC 原始表等不在元数据管理中的表）
+            Object data = response.getData();
+            log.info("[isPublicTable] code={}, data={}, tableName={}", response.getCode(), data, tableName);
             if (data == null) {
                 log.info("[isPublicTable] dataman 查不到表, 默认允许, tableName={}", tableName);
                 return true;
@@ -327,11 +335,11 @@ public class AuthCheckServiceImpl implements AuthCheckService {
 
     @Override
     public String getUserMaxSecurityLevel(String passport) {
-        List<Long> roleIds = authUserRoleMapper.selectRoleIdsByPassport(passport);
+        List<Long> roleIds = authUserRoleRepository.listRoleIdsByPassport(passport);
         if (roleIds == null || roleIds.isEmpty()) {
             return SecurityLevel.L1.getCode();
         }
-        List<AuthRoleDO> roles = authRoleMapper.selectBatchIds(roleIds);
+        List<AuthRole> roles = authRoleRepository.listByIds(roleIds);
         if (roles == null || roles.isEmpty()) {
             return SecurityLevel.L1.getCode();
         }

@@ -52,6 +52,26 @@ public class AuthRoleRepositoryImpl implements AuthRoleRepository {
     }
 
     @Override
+    public List<AuthRole> listByIds(List<Long> ids) {
+        if (ids == null || ids.isEmpty()) {
+            return List.of();
+        }
+        List<AuthRoleDO> roleDOs = authRoleMapper.selectBatchIds(ids);
+        return authRoleInfraConvert.toAuthRoleList(roleDOs);
+    }
+
+    @Override
+    public List<AuthRole> listByCodes(List<String> codes) {
+        if (codes == null || codes.isEmpty()) {
+            return List.of();
+        }
+        LambdaQueryWrapper<AuthRoleDO> wrapper = new LambdaQueryWrapper<>();
+        wrapper.in(AuthRoleDO::getCode, codes);
+        List<AuthRoleDO> roleDOs = authRoleMapper.selectList(wrapper);
+        return authRoleInfraConvert.toAuthRoleList(roleDOs);
+    }
+
+    @Override
     public AuthRole save(AuthRole role) {
         AuthRoleDO roleDO = authRoleInfraConvert.toAuthRoleDO(role);
         authRoleMapper.insert(roleDO);
@@ -94,7 +114,6 @@ public class AuthRoleRepositoryImpl implements AuthRoleRepository {
 
     @Override
     public void addPermission(String roleId, String permissionId) {
-        // 查询是否已存在
         LambdaQueryWrapper<AuthRolePermissionDO> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(AuthRolePermissionDO::getRoleId, Long.valueOf(roleId));
         wrapper.eq(AuthRolePermissionDO::getPermissionId, Long.valueOf(permissionId));
