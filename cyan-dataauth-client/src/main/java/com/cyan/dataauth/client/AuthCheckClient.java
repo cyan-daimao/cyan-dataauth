@@ -21,7 +21,7 @@ import java.util.List;
  * @author cy.Y
  * @since 1.0.0
  */
-@FeignClient(name = "cyan-dataauth", contextId = "cyan-dataauth.check", path = "/rpc/v1/auth/check")
+@FeignClient(name = "cyan-dataauth", contextId = "authCheckClient", path = "/rpc/v1/auth/check", url = "${feign.cyan-dataauth.url:}")
 public interface AuthCheckClient {
 
     /**

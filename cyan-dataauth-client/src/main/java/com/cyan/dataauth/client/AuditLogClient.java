@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
  * @author cy.Y
  * @since 1.0.0
  */
-@FeignClient(name = "cyan-dataauth", contextId = "cyan-dataauth.audit", path = "/rpc/v1/audit")
+@FeignClient(name = "cyan-dataauth", contextId = "auditLogClient", path = "/rpc/v1/audit", url = "${feign.cyan-dataauth.url:}")
 public interface AuditLogClient {
 
     /**

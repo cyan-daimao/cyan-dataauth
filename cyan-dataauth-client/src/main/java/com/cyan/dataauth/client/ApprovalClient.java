@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
  * @author cy.Y
  * @since 1.0.0
  */
-@FeignClient(name = "cyan-dataauth", contextId = "cyan-dataauth.approval", path = "/rpc/v1/approval")
+@FeignClient(name = "cyan-dataauth", contextId = "approvalClient", path = "/rpc/v1/approval", url = "${feign.cyan-dataauth.url:}")
 public interface ApprovalClient {
 
     /**

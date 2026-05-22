@@ -20,7 +20,7 @@ import java.util.List;
  * @author cy.Y
  * @since 1.0.0
  */
-@FeignClient(name = "cyan-dataauth", contextId = "cyan-dataauth.metric", path = "/rpc/v1/auth/metric")
+@FeignClient(name = "cyan-dataauth", contextId = "authMetricClient", path = "/rpc/v1/auth/metric", url = "${feign.cyan-dataauth.url:}")
 public interface AuthMetricClient {
 
     /**
